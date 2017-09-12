@@ -23,4 +23,11 @@ public class SimpleCourseIdeaDAO implements CourseIdeaDAO
     {
         return new ArrayList<>(ideas);
     }
+
+    @Override
+    public CourseIdea findBySlug(String slug)
+    {
+        return ideas.stream().filter(idea -> idea.getSlug().equals(slug))
+                .findFirst().orElseThrow(NotFoundException::new);
+    }
 }
