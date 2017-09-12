@@ -10,11 +10,13 @@ import java.util.Map;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
+import static spark.Spark.staticFileLocation;
 
 public class Main
 {
     public static void main(String[] args)
     {
+        staticFileLocation("/public");
         CourseIdeaDAO dao = new SimpleCourseIdeaDAO();
 
         get("/", (req, res) -> {
@@ -29,6 +31,12 @@ public class Main
             res.cookie("username", username);
             model.put("username", username);
             return new ModelAndView(model, "sign-in.hbs");
+        }, new HandlebarsTemplateEngine());
+
+        get("/ideas", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+            model.put("ideas", dao.findAll());
+            return new ModelAndView(model, "ideas.hbs");
         }, new HandlebarsTemplateEngine());
     }
 }
