@@ -1,5 +1,7 @@
 package com.dlflann.spark;
 
+import com.dlflann.spark.model.CourseIdeaDAO;
+import com.dlflann.spark.model.SimpleCourseIdeaDAO;
 import spark.ModelAndView;
 import spark.template.handlebars.HandlebarsTemplateEngine;
 
@@ -13,6 +15,8 @@ public class Main
 {
     public static void main(String[] args)
     {
+        CourseIdeaDAO dao = new SimpleCourseIdeaDAO();
+
         get("/", (req, res) -> {
             Map<String, String> model = new HashMap<>();
             model.put("username", req.cookie("username"));
