@@ -2,6 +2,7 @@ package com.dlflann.spark;
 
 import com.dlflann.spark.model.CourseIdea;
 import com.dlflann.spark.model.CourseIdeaDAO;
+import com.dlflann.spark.model.NotFoundException;
 import com.dlflann.spark.model.SimpleCourseIdeaDAO;
 import spark.ModelAndView;
 import spark.template.handlebars.HandlebarsTemplateEngine;
@@ -73,6 +74,20 @@ public class Main
             idea.addVoter(req.attribute("username"));
             res.redirect("/ideas");
             return null;
+        });
+
+        get("/ideas/:slug", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+            model.put("idea", dao.findBySlug(req.params("slug")));
+            return new ModelAndView(model, "idea.hbs");
+        }, new HandlebarsTemplateEngine());
+
+        exception(NotFoundException.class, (exc, req, res) -> {
+            res.status(404);
+            HandlebarsTemplateEngine engine = new HandlebarsTemplateEngine();
+            String html = engine.render(new ModelAndView(null,
+                    "not-found.hbs"));
+            res.body(html);
         });
     }
 }

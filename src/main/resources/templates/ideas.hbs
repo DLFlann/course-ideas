@@ -5,7 +5,9 @@
         {{#each ideas}}
             <li>
                 <form action="/ideas/{{slug}}/vote" method="post">
-                    {{title}} ({{ voteCount}} votes) <button
+                    <a href="/ideas/{{slug}}">{{title}}</a> ({{voteCount}}
+                    votes)
+                        <button
                         type="submit">Vote</button>
                 </form>
             </li>
