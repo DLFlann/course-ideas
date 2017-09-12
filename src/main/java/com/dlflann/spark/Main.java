@@ -18,30 +18,50 @@ public class Main
         staticFileLocation("/public");
         CourseIdeaDAO dao = new SimpleCourseIdeaDAO();
 
-        get("/", (req, res) -> {
+        before((req, res) ->
+        {
+            if (req.cookie("username") != null)
+            {
+                req.attribute("username", req.cookie("username"));
+            }
+        });
+
+        before("/ideas", (req, res) ->
+        {
+            // TODO:dlf - Send message about redirect... somehow.
+            if (req.attribute("username") == null)
+            {
+                res.redirect("/");
+                halt();
+            }
+        });
+
+        get("/", (req, res) ->
+        {
             Map<String, String> model = new HashMap<>();
-            model.put("username", req.cookie("username"));
+            model.put("username", req.attribute("username"));
             return new ModelAndView(model, "index.hbs");
         }, new HandlebarsTemplateEngine());
 
-        post("/sign-in", (req, res) -> {
-            Map<String, String> model = new HashMap<>();
+        post("/sign-in", (req, res) ->
+        {
             String username = req.queryParams("username");
             res.cookie("username", username);
-            model.put("username", username);
-            return new ModelAndView(model, "sign-in.hbs");
-        }, new HandlebarsTemplateEngine());
+            res.redirect("/");
+            return null;
+        });
 
-        get("/ideas", (req, res) -> {
+        get("/ideas", (req, res) ->
+        {
             Map<String, Object> model = new HashMap<>();
             model.put("ideas", dao.findAll());
             return new ModelAndView(model, "ideas.hbs");
         }, new HandlebarsTemplateEngine());
 
-        post("/ideas", (req, res) -> {
+        post("/ideas", (req, res) ->
+        {
             String title = req.queryParams("title");
-            // TODO:dlf - This username is tied to the cookie implementation
-            CourseIdea courseIdea = new CourseIdea(title, req.cookie
+            CourseIdea courseIdea = new CourseIdea(title, req.attribute
                     ("username"));
             dao.add(courseIdea);
             res.redirect("/ideas");
